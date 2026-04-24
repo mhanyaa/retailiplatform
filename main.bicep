@@ -5,7 +5,7 @@ param env string
 param prefix string
 
 module monitoring './modules/monitoring.bicep' = {
-  name: 'monitoring'
+  name: 'monitoring-${deployment().name}'
   params: {
     location: location
     env: env
@@ -14,7 +14,7 @@ module monitoring './modules/monitoring.bicep' = {
 }
 
 module kv './modules/keyvault.bicep' = {
-  name: 'keyvault'
+  name: 'keyvault-${deployment().name}'
   params: {
     location: location
     env: env
@@ -23,7 +23,7 @@ module kv './modules/keyvault.bicep' = {
 }
 
 module sql './modules/sql.bicep' = {
-  name: 'sql'
+  name: 'sql-${deployment().name}'
   params: {
     location: location
     env: env
@@ -32,7 +32,7 @@ module sql './modules/sql.bicep' = {
 }
 
 module app './modules/appservice.bicep' = {
-  name: 'app'
+  name: 'app-${deployment().name}'
   params: {
     location: location
     env: env
@@ -41,7 +41,7 @@ module app './modules/appservice.bicep' = {
 }
 
 module vnet './modules/network.bicep' = {
-  name: 'vnet'
+  name: 'vnet-${deployment().name}'
   params: {
     location: location
     env: env
