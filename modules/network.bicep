@@ -2,7 +2,7 @@ param location string
 param env string
 param prefix string
 
-resource vnet 'Microsoft.Network/virtualNetworks@2023-08-01' = {
+resource vnet 'Microsoft.Network/virtualNetworks@2024-05-01' = {
   name: '${prefix}-${env}-vnet'
   location: location
   properties: {
@@ -21,7 +21,7 @@ resource vnet 'Microsoft.Network/virtualNetworks@2023-08-01' = {
       {
         name: 'kv-subnet'
         properties: {
-          addressPrefix: '10.1.2.0/24'
+          addressPrefix: '10.0.2.0/24'
         }
       }
     ]
