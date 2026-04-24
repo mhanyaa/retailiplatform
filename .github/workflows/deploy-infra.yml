@@ -1,0 +1,83 @@
+name: Deploy Infrastructure
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Parameter file environment"
+        required: true
+        default: dev
+        type: choice
+        options:
+          - dev
+          - test
+          - prod
+      resource_group:
+        description: "Target Azure resource group name"
+        required: true
+        type: string
+  push:
+    branches:
+      - main
+    paths:
+      - "**/*.bicep"
+      - "env/*.bicepparam"
+      - ".github/workflows/deploy-infra.yml"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Validate Template (What-If)
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            ENV_NAME="${{ github.event.inputs.environment }}"
+            RG_NAME="${{ github.event.inputs.resource_group }}"
+          else
+            ENV_NAME="dev"
+            RG_NAME="${{ vars.AZURE_RESOURCE_GROUP }}"
+          fi
+
+          if [ -z "${RG_NAME}" ]; then
+            echo "Resource group is empty. Set workflow input (manual run) or repository variable AZURE_RESOURCE_GROUP (push run)."
+            exit 1
+          fi
+
+          az deployment group what-if \
+            --resource-group "${RG_NAME}" \
+            --template-file main.bicep \
+            --parameters "env/${ENV_NAME}.bicepparam"
+
+      - name: Deploy Template
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            ENV_NAME="${{ github.event.inputs.environment }}"
+            RG_NAME="${{ github.event.inputs.resource_group }}"
+          else
+            ENV_NAME="dev"
+            RG_NAME="${{ vars.AZURE_RESOURCE_GROUP }}"
+          fi
+
+          az deployment group create \
+            --name "infra-${{ github.run_number }}" \
+            --resource-group "${RG_NAME}" \
+            --template-file main.bicep \
+            --parameters "env/${ENV_NAME}.bicepparam"
