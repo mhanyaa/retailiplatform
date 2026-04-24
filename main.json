@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.42.1.51946",
-      "templateHash": "12827942904075121483"
+      "templateHash": "9173361441447532984"
     }
   },
   "parameters": {
@@ -257,6 +257,79 @@
               "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', format('asp-{0}-{1}', parameters('prefix'), parameters('env')))]"
               ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "vnet",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "env": {
+            "value": "[parameters('env')]"
+          },
+          "prefix": {
+            "value": "[parameters('prefix')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.42.1.51946",
+              "templateHash": "2335882724395706630"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "env": {
+              "type": "string"
+            },
+            "prefix": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/virtualNetworks",
+              "apiVersion": "2023-08-01",
+              "name": "[format('{0}-{1}-vnet', parameters('prefix'), parameters('env'))]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "addressSpace": {
+                  "addressPrefixes": [
+                    "10.0.0.0/16"
+                  ]
+                },
+                "subnets": [
+                  {
+                    "name": "app-subnet",
+                    "properties": {
+                      "addressPrefix": "10.0.1.0/24"
+                    }
+                  },
+                  {
+                    "name": "kv-subnet",
+                    "properties": {
+                      "addressPrefix": "10.1.2.0/24"
+                    }
+                  }
+                ]
+              }
             }
           ]
         }

@@ -39,3 +39,13 @@ module app './modules/appservice.bicep' = {
     prefix: prefix
   }
 }
+
+module vnet './modules/network.bicep' = {
+  name: 'vnet'
+  params: {
+    location: location
+    env: env
+    prefix: prefix
+  }
+}
+
