@@ -24,6 +24,17 @@ resource vnet 'Microsoft.Network/virtualNetworks@2024-05-01' = {
           addressPrefix: '10.0.2.0/24'
         }
       }
+      {
+        name: 'pe-subnet'
+        properties: {
+          addressPrefix: '10.0.3.0/24'
+          privateEndpointNetworkPolicies: 'Disabled'
+        }
+      }
     ]
   }
 }
+
+output vnetName string = vnet.name
+output vnetId string = vnet.id
+output peSubnetName string = 'pe-subnet'

@@ -49,3 +49,12 @@ module vnet './modules/network.bicep' = {
   }
 }
 
+module kvPe './modules/privateendpoint-keyvault.bicep' = {
+  name: 'keyvault-pe-${deployment().name}'
+  params: {
+    location: location
+    keyVaultName: kv.outputs.keyVaultName
+    vnetName: vnet.outputs.vnetName
+    subnetName: vnet.outputs.peSubnetName
+  }
+}

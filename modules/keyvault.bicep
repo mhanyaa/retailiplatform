@@ -19,3 +19,6 @@ resource kv 'Microsoft.KeyVault/vaults@2023-07-01' = {
     accessPolicies: []
   }
 }
+
+output keyVaultName string = kv.name
+output keyVaultId string = kv.id
